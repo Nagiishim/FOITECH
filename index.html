@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Foitech — Premium Digital Products</title>
+  <link rel="stylesheet" href="style.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;500;700&display=swap" rel="stylesheet">
+  <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+</head>
+<body>
+  <!-- Navbar -->
+  <header class="navbar">
+    <div class="logo">Foitech<span>.</span></div>
+    <nav>
+      <a href="#home">Home</a>
+      <a href="#products-section">Products</a>
+      <a href="#about">About</a>
+      <a href="#contact">Contact</a>
+    </nav>
+    <!-- Cart Icon -->
+    <div class="cart-icon" id="cart-icon">
+      <i class="fas fa-shopping-cart"></i>
+      <span id="cart-count">0</span>
+    </div>
+  </header>
+
+  <!-- Hero Section -->
+  <section id="home" class="hero">
+    <div class="hero-content">
+      <h1>Empower Your Digital World</h1>
+      <p>Discover cutting-edge templates, eBooks, UI kits, and digital tools crafted by Foitech to help you innovate and grow.</p>
+      <a href="#products-section" class="btn">Explore Products</a>
+    </div>
+  </section>
+
+  <!-- Products Section -->
+  <section id="products-section" class="products">
+    <h2>Our Products</h2>
+
+    <!-- Filters/Search/Sort -->
+    <div class="filters-container">
+      <div class="filters">
+        <button class="filter-btn active" data-category="All">All</button>
+        <button class="filter-btn" data-category="Templates">Templates</button>
+        <button class="filter-btn" data-category="eBooks">eBooks</button>
+        <button class="filter-btn" data-category="UI Kits">UI Kits</button>
+      </div>
+      <select id="sort-price" class="sort-dropdown">
+        <option value="default">Sort by Price</option>
+        <option value="low">Low to High</option>
+        <option value="high">High to Low</option>
+      </select>
+      <input type="text" id="search-input" placeholder="Search products..." class="search-input">
+    </div>
+
+    <div class="product-grid" id="product-grid"></div>
+    <div id="pagination" class="pagination"></div>
+  </section>
+
+  <!-- About Section -->
+  <section id="about" class="about">
+    <h2>About Foitech</h2>
+    <p>At Foitech, we create high-quality digital products designed to inspire and accelerate your creative and professional projects. Every product is crafted with precision, creativity, and usability in mind.</p>
+  </section>
+
+  <!-- Contact Section -->
+  <section id="contact" class="contact">
+    <h2>Contact Us</h2>
+    <p>Have questions or suggestions? Reach out at <a href="mailto:support@foitech.com">support@foitech.com</a></p>
+  </section>
+
+  <!-- Footer -->
+  <footer>
+    <p>© 2025 Foitech. All Rights Reserved.</p>
+  </footer>
+
+  <!-- Modals -->
+  <div id="product-modal" class="modal">
+    <div class="modal-content">
+      <span class="close">&times;</span>
+      <h3 id="modal-product-name">Product Name</h3>
+      <p id="modal-product-desc">Product description goes here.</p>
+      <button id="modal-buy-btn" class="btn">Add to Cart</button>
+    </div>
+  </div>
+
+  <div id="cart-modal" class="modal">
+    <div class="modal-content">
+      <span class="close-cart">&times;</span>
+      <h2>Your Cart</h2>
+      <div id="cart-items"></div>
+      <input type="email" id="customer-email" placeholder="Enter your email" class="email-input" required>
+      <button id="checkout-btn" class="btn">Checkout</button>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
