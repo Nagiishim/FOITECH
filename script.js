@@ -1,49 +1,59 @@
-// Products Array
+// ---------------------------
+// Foitech - Frontend (Flutterwave)
+// ---------------------------
+
+// ---------- Products ----------
 const PRODUCTS = [
-  {id:1,title:'Creative Portfolio Template',price:19,image:'https://source.unsplash.com/280x200/?design',desc:'Modern portfolio template', download:'#', category:'Templates'},
-  {id:2,title:'Business Startup Guide eBook',price:15,image:'https://source.unsplash.com/280x200/?book',desc:'Step-by-step startup guide', download:'#', category:'eBooks'},
-  {id:3,title:'UI Kit Pro',price:29,image:'https://source.unsplash.com/280x200/?ui',desc:'Components for designers', download:'#', category:'UI Kits'},
-  {id:4,title:'Marketing eBook',price:12,image:'https://source.unsplash.com/280x200/?marketing',desc:'Marketing strategies guide', download:'#', category:'eBooks'},
-  {id:5,title:'Mobile App Template',price:25,image:'https://source.unsplash.com/280x200/?app',desc:'Complete app template', download:'#', category:'Templates'}
+  {id:1, title:'Creative Portfolio Template', price:19, image:'https://source.unsplash.com/280x200/?design', desc:'Modern portfolio template', category:'Templates', download:'#'},
+  {id:2, title:'Business Startup Guide eBook', price:15, image:'https://source.unsplash.com/280x200/?book', desc:'Step-by-step startup guide', category:'eBooks', download:'#'},
+  {id:3, title:'UI Kit Pro', price:29, image:'https://source.unsplash.com/280x200/?ui', desc:'Components for designers', category:'UI Kits', download:'#'},
+  {id:4, title:'Marketing eBook', price:12, image:'https://source.unsplash.com/280x200/?marketing', desc:'Marketing strategies guide', category:'eBooks', download:'#'},
+  {id:5, title:'Mobile App Template', price:25, image:'https://source.unsplash.com/280x200/?app', desc:'Complete app template', category:'Templates'}
 ];
 
-// DOM Elements
+// ---------- DOM ----------
 const productGrid = document.getElementById('product-grid');
 const searchInput = document.getElementById('search-input');
 const filterButtons = document.querySelectorAll('.filter-btn');
 const sortDropdown = document.getElementById('sort-price');
 
 const modal = document.getElementById('product-modal');
+const modalImage = document.getElementById('modal-image');
 const modalName = document.getElementById('modal-product-name');
 const modalDesc = document.getElementById('modal-product-desc');
+const modalPrice = document.getElementById('modal-product-price');
 const modalBuyBtn = document.getElementById('modal-buy-btn');
-const closeBtn = document.querySelector('.close');
+const modalClose = document.querySelector('.modal .close');
 
 const cartModal = document.getElementById('cart-modal');
-const cartItems = document.getElementById('cart-items');
+const cartItemsDiv = document.getElementById('cart-items');
 const closeCartBtn = document.querySelector('.close-cart');
 const checkoutBtn = document.getElementById('checkout-btn');
+const bankTransferBtn = document.getElementById('bank-transfer-btn');
 const cartIcon = document.getElementById('cart-icon');
 const cartCount = document.getElementById('cart-count');
+const cartTotalP = document.getElementById('cart-total');
 
 let currentPage = 1;
 const productsPerPage = 4;
 let cart = [];
 
-// Render Products
+// ---------- Render Products ----------
 function renderProducts(products){
-  const totalPages = Math.ceil(products.length / productsPerPage);
-  const start = (currentPage-1)*productsPerPage;
-  const end = start+productsPerPage;
-  const paginated = products.slice(start,end);
+  const totalPages = Math.max(1, Math.ceil(products.length / productsPerPage));
+  const start = (currentPage - 1) * productsPerPage;
+  const paginated = products.slice(start, start + productsPerPage);
 
-  productGrid.innerHTML='';
-  if(paginated.length===0){productGrid.innerHTML='<p>No products found.</p>'; return;}
+  productGrid.innerHTML = '';
+  if(paginated.length === 0){
+    productGrid.innerHTML = '<p>No products found.</p>';
+    return;
+  }
 
   paginated.forEach(p=>{
-    const div = document.createElement('div');
-    div.className='product';
-    div.innerHTML=`
+    const card = document.createElement('div');
+    card.className = 'product';
+    card.innerHTML = `
       <img src="${p.image}" alt="${p.title}">
       <div class="product-info">
         <h3>${p.title}</h3>
@@ -51,152 +61,261 @@ function renderProducts(products){
         <button class="btn view-btn">View</button>
       </div>
     `;
-    div.querySelector('.view-btn').addEventListener('click',()=>openModal(p));
-    productGrid.appendChild(div);
+    card.querySelector('.view-btn').addEventListener('click', ()=> openModal(p));
+    productGrid.appendChild(card);
   });
 
   renderPagination(totalPages, products);
 }
 
-// Pagination
 function renderPagination(totalPages, products){
   const paginationDiv = document.getElementById('pagination');
-  paginationDiv.innerHTML='';
+  paginationDiv.innerHTML = '';
   for(let i=1;i<=totalPages;i++){
-    const btn = document.createElement('button');
-    btn.textContent=i;
-    if(i===currentPage) btn.classList.add('active');
-    btn.addEventListener('click',()=>{
-      currentPage=i;
+    const b = document.createElement('button');
+    b.textContent = i;
+    if(i === currentPage) b.classList.add('active');
+    b.addEventListener('click', ()=> {
+      currentPage = i;
       renderProducts(products);
     });
-    paginationDiv.appendChild(btn);
+    paginationDiv.appendChild(b);
   }
 }
 
-// Product Modal
+// ---------- Modal ----------
 function openModal(product){
+  modalImage.src = product.image;
   modalName.textContent = product.title;
   modalDesc.textContent = product.desc;
-  modal.style.display='block';
+  modalPrice.textContent = `$${product.price}`;
+  modalBuyBtn.onclick = ()=> addToCart(product.id);
+  modal.style.display = 'block';
   modal.classList.add('show');
 }
-closeBtn.addEventListener('click',()=>{
-  modal.classList.remove('show');
-  setTimeout(()=>{modal.style.display='none'},300);
-});
-window.addEventListener('click',e=>{
-  if(e.target==modal){
-    modal.classList.remove('show');
-    setTimeout(()=>{modal.style.display='none'},300);
-  }
-});
+modalClose.onclick = ()=> closeModal(modal);
+window.addEventListener('click', e => { if(e.target === modal){ closeModal(modal); }});
+function closeModal(m){ m.classList.remove('show'); setTimeout(()=>{ m.style.display = 'none'; }, 250); }
 
-// Add to Cart
-modalBuyBtn.addEventListener('click',()=>{
-  const productTitle = modalName.textContent;
-  const product = PRODUCTS.find(p=>p.title===productTitle);
+// ---------- Cart ----------
+function addToCart(productId){
+  const product = PRODUCTS.find(p => p.id === productId);
   if(!product) return;
-
   cart.push(product);
   renderCart();
-  modal.classList.remove('show');
-  setTimeout(()=>{modal.style.display='none';},300);
-});
+  closeModal(modal);
+  openCart();
+}
 
-// Render Cart
 function renderCart(){
-  cartItems.innerHTML='';
-  cartCount.textContent=cart.length;
-  if(cart.length===0){cartItems.innerHTML='<p>Your cart is empty.</p>'; return;}
+  cartItemsDiv.innerHTML = '';
+  cartCount.textContent = cart.length;
+  if(cart.length === 0){
+    cartItemsDiv.innerHTML = '<p>Your cart is empty.</p>';
+    cartTotalP.textContent = '';
+    return;
+  }
 
-  cart.forEach((p,index)=>{
-    const div = document.createElement('div');
-    div.className='cart-item';
-    div.innerHTML=`<p>${p.title} - $${p.price} <button data-index="${index}" class="remove-btn">Remove</button></p>`;
-    cartItems.appendChild(div);
+  let total = 0;
+  cart.forEach((p, idx) => {
+    total += p.price;
+    const item = document.createElement('div');
+    item.className = 'cart-item';
+    item.innerHTML = `<p>${p.title} - $${p.price}</p><div><button class="remove-btn" data-index="${idx}">Remove</button></div>`;
+    cartItemsDiv.appendChild(item);
   });
 
+  cartTotalP.textContent = `Total: $${total}`;
+
   document.querySelectorAll('.remove-btn').forEach(btn=>{
-    btn.addEventListener('click',e=>{
-      const idx = e.target.dataset.index;
+    btn.addEventListener('click', e=>{
+      const idx = Number(e.target.dataset.index);
       cart.splice(idx,1);
       renderCart();
     });
   });
 }
 
-// Open Cart Modal
-cartIcon.addEventListener('click',()=>{cartModal.style.display='block';});
-
-// Close Cart Modal
-closeCartBtn.addEventListener('click',()=>{cartModal.style.display='none';});
-window.addEventListener('click',e=>{if(e.target==cartModal) cartModal.style.display='none';});
-
-// Checkout (simulated)
-checkoutBtn.addEventListener('click',()=>{
-  const email = document.getElementById('customer-email').value;
-  if(cart.length===0){alert('Cart is empty!'); return;}
-  if(!email){alert('Enter your email!'); return;}
-  alert('Checkout simulated!\nProducts: '+cart.map(p=>p.title).join(', ')+'\nEmail: '+email);
-  cart=[];
+function openCart(){
+  cartModal.style.display = 'block';
+  cartModal.classList.add('show');
   renderCart();
-  cartModal.style.display='none';
+}
+
+// open via icon
+cartIcon.addEventListener('click', ()=> openCart());
+closeCartBtn.addEventListener('click', ()=> { cartModal.style.display = 'none'; });
+window.addEventListener('click', e => { if(e.target === cartModal) cartModal.style.display = 'none'; });
+
+// ---------- Checkout / Flutterwave ----------
+const FLUTTERWAVE_PUBLIC_KEY = "FLWPUBK-466a6d44b23c9074221cbf240fe62797-X"; // your public key
+
+checkoutBtn.addEventListener('click', ()=> {
+  const email = document.getElementById('customer-email').value?.trim();
+  if(cart.length === 0){ alert('Your cart is empty'); return; }
+  if(!email || !validateEmail(email)){ alert('Please enter a valid email'); return; }
+
+  const total = cart.reduce((s,p)=>s+p.price,0);
+
+  // Prepare product list for metadata
+  const purchasedProducts = cart.map(p => `${p.title} ($${p.price})`).join(', ');
+
+  // Flutterwave checkout options — includes many payment methods
+  FlutterwaveCheckout({
+    public_key: FLUTTERWAVE_PUBLIC_KEY,
+    tx_ref: 'FOITECH_' + Date.now(),
+    amount: total,
+    currency: "NGN",
+    payment_options: "card,account,ussd,nqr,banktransfer,mobilemoneyghana,enaira",
+    customer: {
+      email: email,
+      name: "Foitech Customer"
+    },
+    customization: {
+      title: "Foitech Digital Products",
+      description: purchasedProducts,
+      logo: "https://yourwebsite.com/logo.png"
+    },
+    callback: function (data) {
+      // data contains transaction_id, tx_ref, status, etc.
+      showDownloadModal(cart);
+      cart = [];
+      renderCart();
+      cartModal.style.display = 'none';
+      // NOTE: verify transaction server-side with your secret key (important for security)
+    },
+    onclose: function() {
+      alert('Payment window closed.');
+    }
+  });
 });
 
-// Filters
-filterButtons.forEach(btn=>{
-  btn.addEventListener('click',()=>{
-    const category = btn.dataset.category;
-    filterButtons.forEach(b=>b.classList.remove('active'));
-    btn.classList.add('active');
+// ---------- Bank Transfer (Manual) ----------
+bankTransferBtn.addEventListener('click', ()=> {
+  const email = document.getElementById('customer-email').value?.trim();
+  if(cart.length === 0){ alert('Your cart is empty'); return; }
+  if(!email || !validateEmail(email)){ alert('Please enter a valid email'); return; }
 
-    let filtered = category==='All'?PRODUCTS:PRODUCTS.filter(p=>p.category===category);
-    const query = searchInput.value.toLowerCase();
-    if(query) filtered = filtered.filter(p=>p.title.toLowerCase().includes(query));
-    currentPage=1;
+  // Show manual bank transfer instructions in a modal
+  const instructions = `
+    <h2>Manual Bank Transfer</h2>
+    <p>Transfer the total amount to the account below, then click "I have paid" to confirm.</p>
+    <ul style="text-align:left;color:#fff;">
+      <li><strong>Bank:</strong> Access Bank</li>
+      <li><strong>Account Name:</strong> Foitech (or your sister's name)</li>
+      <li><strong>Account Number:</strong> 1234567890</li>
+      <li><strong>Amount:</strong> $${cart.reduce((s,p)=>s+p.price,0)}</li>
+    </ul>
+    <p>After transfer, send a screenshot to support@foitech.com or click "I have paid" below.</p>
+    <button id="i-paid-btn" class="btn">I have paid</button>
+  `;
+  showHtmlModal(instructions);
+
+  // handle "I have paid" after modal shows (delegate)
+  document.addEventListener('click', function handler(e){
+    if(e.target && e.target.id === 'i-paid-btn'){
+      alert('Thanks — we received your payment request. We will confirm within a few minutes and send download links.');
+      closeHtmlModal();
+      document.removeEventListener('click', handler);
+      // Optionally: record pending order, email customer, etc.
+      cart = [];
+      renderCart();
+      cartModal.style.display = 'none';
+    }
+  });
+});
+
+// ---------- Download Modal (on successful payment) ----------
+function showDownloadModal(purchasedArray){
+  // purchasedArray: list of product objects
+  const links = purchasedArray.map(p => `<li><a href="${p.download}" download>${p.title}</a></li>`).join('');
+  const html = `
+    <h2>Payment successful — download your products</h2>
+    <p style="text-align:left;color:#fff;">Click the links below to download your purchases. (Placeholders for now — replace with your real file URLs.)</p>
+    <ul style="text-align:left;color:#fff;">${links}</ul>
+    <div style="margin-top:12px;"><button id="close-download" class="btn">Close</button></div>
+  `;
+  showHtmlModal(html);
+
+  document.addEventListener('click', function closeHandler(e){
+    if(e.target && e.target.id === 'close-download'){
+      closeHtmlModal();
+      document.removeEventListener('click', closeHandler);
+    }
+  });
+}
+
+// ---------- Utility: Generic HTML modal for custom content ----------
+let _htmlModalEl = null;
+function showHtmlModal(innerHtml){
+  if(_htmlModalEl) _htmlModalEl.remove();
+  _htmlModalEl = document.createElement('div');
+  _htmlModalEl.className = 'modal';
+  _htmlModalEl.innerHTML = `<div class="modal-content">${innerHtml}<span class="close-html" style="position:absolute;right:12px;top:8px;color:#cfcfcf;cursor:pointer;font-size:20px">&times;</span></div>`;
+  document.body.appendChild(_htmlModalEl);
+  _htmlModalEl.style.display = 'block';
+  _htmlModalEl.classList.add('show');
+
+  _htmlModalEl.querySelector('.close-html').addEventListener('click', ()=> closeHtmlModal());
+  _htmlModalEl.addEventListener('click', e => { if(e.target === _htmlModalEl) closeHtmlModal(); });
+}
+function closeHtmlModal(){
+  if(!_htmlModalEl) return;
+  _htmlModalEl.classList.remove('show');
+  setTimeout(()=>{ _htmlModalEl.remove(); _htmlModalEl = null; }, 250);
+}
+
+// ---------- Filters / Search / Sort ----------
+filterButtons.forEach(btn=>{
+  btn.addEventListener('click', ()=>{
+    filterButtons.forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    const cat = btn.dataset.category;
+    let filtered = (cat === 'All') ? PRODUCTS : PRODUCTS.filter(p => p.category === cat);
+    const q = searchInput.value.trim().toLowerCase();
+    if(q) filtered = filtered.filter(p => p.title.toLowerCase().includes(q));
+    currentPage = 1;
     renderProducts(filtered);
   });
 });
 
-// Search
-searchInput.addEventListener('input',e=>{
-  const query = e.target.value.toLowerCase();
-  const activeBtn = document.querySelector('.filter-btn.active');
+searchInput.addEventListener('input', e=>{
+  const q = e.target.value.trim().toLowerCase();
+  const active = document.querySelector('.filter-btn.active');
   let filtered = PRODUCTS;
-  if(activeBtn && activeBtn.dataset.category!=='All') filtered = PRODUCTS.filter(p=>p.category===activeBtn.dataset.category);
-  filtered = filtered.filter(p=>p.title.toLowerCase().includes(query));
-  currentPage=1;
+  if(active && active.dataset.category !== 'All') filtered = PRODUCTS.filter(p => p.category === active.dataset.category);
+  if(q) filtered = filtered.filter(p => p.title.toLowerCase().includes(q));
+  currentPage = 1;
   renderProducts(filtered);
 });
 
-// Sort
-sortDropdown.addEventListener('change',()=>{
-  let filtered = PRODUCTS;
-  const activeBtn = document.querySelector('.filter-btn.active');
-  if(activeBtn && activeBtn.dataset.category!=='All') filtered = PRODUCTS.filter(p=>p.category===activeBtn.dataset.category);
-  const query = searchInput.value.toLowerCase();
-  if(query) filtered = filtered.filter(p=>p.title.toLowerCase().includes(query));
-  if(sortDropdown.value==='low') filtered.sort((a,b)=>a.price-b.price);
-  else if(sortDropdown.value==='high') filtered.sort((a,b)=>b.price-a.price);
-  currentPage=1;
+sortDropdown.addEventListener('change', ()=>{
+  const mode = sortDropdown.value;
+  const active = document.querySelector('.filter-btn.active');
+  let filtered = active && active.dataset.category !== 'All' ? PRODUCTS.filter(p=>p.category===active.dataset.category) : PRODUCTS.slice();
+  const q = searchInput.value.trim().toLowerCase();
+  if(q) filtered = filtered.filter(p => p.title.toLowerCase().includes(q));
+  if(mode === 'low') filtered.sort((a,b)=>a.price-b.price);
+  if(mode === 'high') filtered.sort((a,b)=>b.price-a.price);
+  currentPage = 1;
   renderProducts(filtered);
 });
 
-// Scroll animations
+// ---------- Scroll animations ----------
 const sections = document.querySelectorAll('section');
 const observer = new IntersectionObserver(entries=>{
   entries.forEach(entry=>{
-    if(entry.isIntersecting){
-      entry.target.classList.add('visible');
-    } else {
-      entry.target.classList.remove('visible');
-    }
+    if(entry.isIntersecting) entry.target.classList.add('visible');
+    else entry.target.classList.remove('visible');
   });
-},{threshold:0.1});
+},{threshold:0.12});
+sections.forEach(s => { s.classList.add('hidden'); observer.observe(s); });
 
-sections.forEach(section=>section.classList.add('hidden'));
-sections.forEach(section=>observer.observe(section));
+// ---------- Helpers ----------
+function validateEmail(email){
+  return /\S+@\S+\.\S+/.test(email);
+}
 
-// Initial Render
+// ---------- Initial render ----------
 renderProducts(PRODUCTS);
+renderCart();
