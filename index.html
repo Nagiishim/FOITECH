@@ -1,15 +1,17 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Foitech — Premium Digital Products</title>
   <link rel="stylesheet" href="style.css" />
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;500;700&display=swap" rel="stylesheet">
   <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+  <!-- Flutterwave inline -->
+  <script src="https://checkout.flutterwave.com/v3.js"></script>
 </head>
 <body>
-  <!-- Navbar -->
   <header class="navbar">
     <div class="logo">Foitech<span>.</span></div>
     <nav>
@@ -18,27 +20,24 @@
       <a href="#about">About</a>
       <a href="#contact">Contact</a>
     </nav>
-    <!-- Cart Icon -->
+
     <div class="cart-icon" id="cart-icon">
       <i class="fas fa-shopping-cart"></i>
       <span id="cart-count">0</span>
     </div>
   </header>
 
-  <!-- Hero Section -->
   <section id="home" class="hero">
     <div class="hero-content">
       <h1>Empower Your Digital World</h1>
-      <p>Discover cutting-edge templates, eBooks, UI kits, and digital tools crafted by Foitech to help you innovate and grow.</p>
+      <p>Discover templates, eBooks, UI kits and digital tools crafted by Foitech to help you grow.</p>
       <a href="#products-section" class="btn">Explore Products</a>
     </div>
   </section>
 
-  <!-- Products Section -->
   <section id="products-section" class="products">
     <h2>Our Products</h2>
 
-    <!-- Filters/Search/Sort -->
     <div class="filters-container">
       <div class="filters">
         <button class="filter-btn active" data-category="All">All</button>
@@ -46,54 +45,63 @@
         <button class="filter-btn" data-category="eBooks">eBooks</button>
         <button class="filter-btn" data-category="UI Kits">UI Kits</button>
       </div>
+
       <select id="sort-price" class="sort-dropdown">
         <option value="default">Sort by Price</option>
-        <option value="low">Low to High</option>
-        <option value="high">High to Low</option>
+        <option value="low">Low → High</option>
+        <option value="high">High → Low</option>
       </select>
-      <input type="text" id="search-input" placeholder="Search products..." class="search-input">
+
+      <input type="text" id="search-input" class="search-input" placeholder="Search products..." />
     </div>
 
-    <div class="product-grid" id="product-grid"></div>
+    <div id="product-grid" class="product-grid"></div>
     <div id="pagination" class="pagination"></div>
   </section>
 
-  <!-- About Section -->
   <section id="about" class="about">
     <h2>About Foitech</h2>
-    <p>At Foitech, we create high-quality digital products designed to inspire and accelerate your creative and professional projects. Every product is crafted with precision, creativity, and usability in mind.</p>
+    <p>Foitech creates high-quality digital products designed to inspire and accelerate your projects — templates, eBooks and UI kits made with care.</p>
   </section>
 
-  <!-- Contact Section -->
   <section id="contact" class="contact">
-    <h2>Contact Us</h2>
-    <p>Have questions or suggestions? Reach out at <a href="mailto:support@foitech.com">support@foitech.com</a></p>
+    <h2>Contact</h2>
+    <p>Reach us at <a href="mailto:support@foitech.com">support@foitech.com</a></p>
   </section>
 
-  <!-- Footer -->
   <footer>
-    <p>© 2025 Foitech. All Rights Reserved.</p>
+    <p>© 2025 Foitech. All rights reserved.</p>
   </footer>
 
-  <!-- Modals -->
+  <!-- Product Modal -->
   <div id="product-modal" class="modal">
     <div class="modal-content">
       <span class="close">&times;</span>
+      <img id="modal-image" src="" alt="" style="width:100%;border-radius:8px;margin-bottom:12px" />
       <h3 id="modal-product-name">Product Name</h3>
-      <p id="modal-product-desc">Product description goes here.</p>
+      <p id="modal-product-desc">Product description</p>
+      <p id="modal-product-price" style="font-weight:700;color:#ff3366;"></p>
       <button id="modal-buy-btn" class="btn">Add to Cart</button>
     </div>
   </div>
 
+  <!-- Cart Modal -->
   <div id="cart-modal" class="modal">
-    <div class="modal-content">
+    <div class="modal-content cart-content">
       <span class="close-cart">&times;</span>
       <h2>Your Cart</h2>
       <div id="cart-items"></div>
-      <input type="email" id="customer-email" placeholder="Enter your email" class="email-input" required>
-      <button id="checkout-btn" class="btn">Checkout</button>
+      <p id="cart-total" style="font-weight:700;color:#ff3366;margin-top:12px;"></p>
+      <input type="email" id="customer-email" class="email-input" placeholder="Enter your email" />
+      <div style="margin-top:12px;">
+        <button id="checkout-btn" class="btn">Pay (Flutterwave)</button>
+        <button id="bank-transfer-btn" class="btn" style="background:#333;margin-left:8px;">Pay by Bank Transfer</button>
+      </div>
+      <p style="font-size:12px;color:#bbb;margin-top:8px;">Tip: For bank transfer, follow instructions after clicking.</p>
     </div>
   </div>
+
+  <!-- Download Modal (created dynamically on success) -->
 
   <script src="script.js"></script>
 </body>
