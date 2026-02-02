@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Blue House Contribution System</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;700&display=swap');
+
+body, html {
+  margin: 0;
+  padding: 0;
+  font-family: 'Nunito', sans-serif;
+  height: 100%;
+  overflow-x: hidden;
+}
+
+/* Lively background animation */
+body {
+  background: linear-gradient(270deg, #0a1dff, #00e5ff, #ff77ff, #ffdd00);
+  background-size: 800% 800%;
+  animation: gradientBG 20s ease infinite;
+}
+
+@keyframes gradientBG {
+  0% {background-position: 0% 50%;}
+  50% {background-position: 100% 50%;}
+  100% {background-position: 0% 50%;}
+}
+
+/* Homepage Modal */
+#homeModal {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  background: rgba(0,0,0,0.9);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  z-index: 200;
+  color: #fff;
+  text-align: center;
+  animation: fadeIn 1.5s ease forwards;
+}
+
+#homeModal h1 {
+  font-size: 4rem;
+  margin-bottom: 20px;
+  animation: bounce 2s infinite;
+}
+
+#homeModal button {
+  padding: 15px 30px;
+  border-radius: 12px;
+  border: none;
+  background: #ff55ff;
+  color: #002b44;
+  font-weight: bold;
+  cursor: pointer;
+  font-size: 1.2rem;
+  animation: pulseBtn 2s infinite;
+}
+
+@keyframes bounce {
+  0%,100% { transform: translateY(0); }
+  50% { transform: translateY(-15px); }
+}
+
+@keyframes pulseBtn {
+  0%,100%{transform: scale(1);}
+  50%{transform: scale(1.1);}
+}
+
+/* Main Content */
+header {
+  padding: 25px;
+  text-align: center;
+  animation: fadeInDown 1s ease forwards;
+}
+
+header h1 {
+  margin: 0;
+  font-size: 3rem;
+  letter-spacing: 3px;
+  text-shadow: 2px 2px 6px rgba(0,0,0,0.5);
+  animation: bounce 2s infinite;
+}
+
+header p {
+  opacity: 0.9;
+  font-size: 1.1rem;
+  text-shadow: 1px 1px 3px rgba(0,0,0,0.3);
+}
+
+.container {
+  max-width: 1000px;
+  margin: auto;
+  padding: 25px;
+}
+
+.card {
+  background: rgba(255,255,255,0.15);
+  border-radius: 20px;
+  padding: 25px;
+  box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+  margin-bottom: 25px;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.card:hover {
+  transform: translateY(-7px) rotate(-0.5deg);
+  box-shadow: 0 25px 60px rgba(0,0,0,0.6);
+  background: rgba(255,255,255,0.25);
+}
+
+.total {
+  text-align: center;
+}
+
+.total span {
+  font-size: 3rem;
+  font-weight: bold;
+  color: #fff700;
+  text-shadow: 2px 2px 6px #ff00ff;
+  animation: pulseText 2s infinite;
+}
+
+@keyframes pulseText {
+  0%,100%{transform: scale(1); color:#fff700;}
+  50%{transform: scale(1.1); color:#ffbb00;}
+}
+
+.progress {
+  width: 100%;
+  height: 20px;
+  background: rgba(255,255,255,0.25);
+  border-radius: 25px;
+  overflow: hidden;
+  box-shadow: inset 0 0 5px rgba(0,0,0,0.3);
+}
+
+.progress-fill {
+  height: 100%;
+  width: 0%;
+  background: linear-gradient(90deg, #ff77ff, #00ffcc);
+  transition: width 0.8s ease;
+  animation: pulse 3s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%,100%{filter:brightness(1);}
+  50%{filter:brightness(1.2);}
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 20px;
+}
+
+th, td {
+  padding: 14px;
+  text-align: left;
+  text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
+}
+
+tbody tr:hover {
+  background: rgba(255,255,255,0.12);
+  transform: scale(1.02);
+}
+
+.badge {
+  background: #ffbb00;
+  color: #003366;
+  padding: 4px 12px;
+  border-radius: 25px;
+  font-size: 0.85rem;
+  font-weight: 700;
+  text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
+}
+
+#watermark {
+  position: fixed;
+  bottom: 10px;
+  right: 10px;
+  font-size: 0.9rem;
+  color: rgba(255,255,255,0.3);
+  font-weight: bold;
+  pointer-events: none;
+  user-select: none;
+  animation: float 3s ease-in-out infinite;
+}
+
+#adminCornerBtn {
+  position: fixed;
+  bottom: 10px;
+  left: 10px;
+  background: #ff55ff;
+  color: #002b44;
+  padding: 8px 12px;
+  border-radius: 12px;
+  font-weight: bold;
+  cursor: pointer;
+  z-index: 100;
+}
+
+#adminModal {
+  position: fixed;
+  bottom: 50px;
+  left: 10px;
+  background: rgba(0,0,0,0.85);
+  padding: 20px;
+  border-radius: 15px;
+  display: none;
+  z-index: 101;
+}
+
+#adminModal input, #adminModal button {
+  margin-top: 10px;
+  padding: 8px;
+  border-radius: 8px;
+  border: none;
+  font-size: 1rem;
+}
+
+#adminModal button {
+  background: #ff00ff;
+  color: #fff;
+  cursor: pointer;
+}
+</style>
+</head>
+<body>
+
+<!-- Homepage Modal -->
+<div id="homeModal">
+  <h1>Welcome to Blue House Contributions!</h1>
+  <button onclick="enterSite()">Enter Dashboard</button>
+</div>
+
+<header>
+  <h1>BLUE HOUSE</h1>
+  <p>Inter-House Contribution Dashboard</p>
+</header>
+
+<div class="container">
+  <div class="card total">
+    <h2>Total Amount Raised</h2>
+    <span id="totalAmount">₦0</span>
+    <div class="progress-box">
+      <p>Target: <strong>₦100,000</strong></p>
+      <div class="progress">
+        <div class="progress-fill" id="progressFill"></div>
+      </div>
+    </div>
+  </div>
+  <div class="card">
+    <h3>Contributors List</h3>
+    <table>
+      <thead>
+        <tr><th>Name</th><th>Class / Role</th><th>Amount</th><th>Status</th></tr>
+      </thead>
+      <tbody id="tableBody"></tbody>
+    </table>
+  </div>
+</div>
+
+<div id="adminCornerBtn" onclick="toggleAdmin()">Admin Corner</div>
+<div id="adminModal">
+  <input type="password" id="adminPassword" placeholder="Enter Admin Password" />
+  <button onclick="checkAdminPassword()">Enter</button>
+  <div id="adminFormContainer" style="display:none; margin-top:10px;">
+    <form id="contributionForm">
+      <input type="text" id="name" placeholder="Student Name" required />
+      <input type="text" id="role" placeholder="Class / Role" required />
+      <input type="number" id="amount" placeholder="Amount (₦)" required />
+      <button type="submit">Add Contribution</button>
+    </form>
+    <div style="margin-top:15px;">
+      <h4>Remove Contribution</h4>
+      <input type="text" id="removeName" placeholder="Enter Name to Remove" />
+      <button onclick="removeContribution()">Remove</button>
+    </div>
+  </div>
+</div>
+
+<div id="watermark">Made by Dike</div>
+<footer>© 2026 Blue House • Sweet and lively contributions</footer>
+
+<script>
+let contributions = JSON.parse(localStorage.getItem('blueHouseData')) || [];
+const PASSWORD = 'blue123';
+
+function enterSite(){
+  document.getElementById('homeModal').style.display='none';
+  render();
+}
+
+function render(){
+  const tableBody=document.getElementById('tableBody');
+  let total=0;
+  tableBody.innerHTML='';
+  contributions.forEach(person=>{
+    total+=person.amount;
+    const row=document.createElement('tr');
+    row.innerHTML=`<td>${person.name}</td><td>${person.role}</td><td>₦${person.amount.toLocaleString()}</td><td><span class='badge'>Paid</span></td>`;
+    tableBody.appendChild(row);
+  });
+  document.getElementById('totalAmount').textContent=`₦${total.toLocaleString()}`;
+  document.getElementById('progressFill').style.width=Math.min((total/100000)*100,100)+'%';
+  localStorage.setItem('blueHouseData',JSON.stringify(contributions));
+}
+
+document.getElementById('contributionForm').addEventListener('submit',e=>{
+  e.preventDefault();
+  const name=document.getElementById('name').value;
+  const role=document.getElementById('role').value;
+  const amount=Number(document.getElementById('amount').value);
+  contributions.push({name, role, amount});
+  render();
+  e.target.reset();
+});
+
+function toggleAdmin(){
+  const modal=document.getElementById('adminModal');
+  modal.style.display=modal.style.display==='block'?'none':'block';
+}
+
+function checkAdminPassword(){
+  const input=document.getElementById('adminPassword').value;
+  if(input===PASSWORD){
+    document.getElementById('adminFormContainer').style.display='block';
+  } else alert('Wrong password!');
+}
+
+function removeContribution(){
+  const name=document.getElementById('removeName').value;
+  contributions=contributions.filter(p=>p.name.toLowerCase()!==name.toLowerCase());
+  render();
+  document.getElementById('removeName').value='';
+}
+</script>
+
+</body>
+</html>
